@@ -422,8 +422,6 @@ This project implements standard search algorithms for educational purposes. Alg
 
 ---
 
-**Maintainer**: [Your Name/Team]  
-**Last Updated**: 2024  
-**Version**: 1.0.0  
+
 
 *For questions or contributions, please refer to the project repository.*
