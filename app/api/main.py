@@ -49,7 +49,7 @@ async def root():
             "generate_grid": "/api/v1/grid/generate",
             "search": "/api/v1/search",
             "compare_algorithms": "/api/v1/search/compare",
-            "plan_deliveries": "/api/v1/delivery/plan"
+            "plan_deliveries": "/api/v1/delivery/plan2"
         }
     }
 

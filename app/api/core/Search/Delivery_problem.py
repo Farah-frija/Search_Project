@@ -29,8 +29,8 @@ class DeliveryProblem(SearchProblem):
         
         # Possible moves: up, down, left, right
         directions = [
-            ("up", Position(0, -1)),
-            ("down", Position(0, 1)),
+            ("up", Position(0, 1)),
+            ("down", Position(0, -1)),
             ("left", Position(-1, 0)),
             ("right", Position(1, 0))
         ]
@@ -77,9 +77,9 @@ class DeliveryProblem(SearchProblem):
         
         for action in actions:
             if action == "up":
-                new_pos = Position(current_pos.x, current_pos.y - 1)
-            elif action == "down":
                 new_pos = Position(current_pos.x, current_pos.y + 1)
+            elif action == "down":
+                new_pos = Position(current_pos.x, current_pos.y - 1)
             elif action == "left":
                 new_pos = Position(current_pos.x - 1, current_pos.y)
             elif action == "right":

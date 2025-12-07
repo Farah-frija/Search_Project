@@ -123,7 +123,9 @@ class DeliveryPlanner:
                     'customer_count': len(balanced_assignments)
                 }
             }
-        
+        print(f"{'='*70}\n")
+        print(analysis_data)
+        print(f"{'='*70}\n")
         return analysis_data
     
     def _calculate_store_loads(self, assignments):
