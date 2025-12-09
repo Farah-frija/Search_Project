@@ -355,9 +355,32 @@ class GridVisualizer:
                 hovertext=['Start', 'End'],
                 showlegend=False
             ))
+            
+            # ADD THIS: Detect and highlight tunnel jumps
+            for i in range(len(path_positions) - 1):
+                current = path_positions[i]
+                next_pos = path_positions[i + 1]
+                
+                # Check if this is a tunnel jump (non-adjacent positions)
+                if abs(current['x'] - next_pos['x']) + abs(current['y'] - next_pos['y']) > 1:
+                    # Add a dashed line for tunnel
+                    fig.add_trace(go.Scatter(
+                        x=[current['x'], next_pos['x']],
+                        y=[current['y'], next_pos['y']],
+                        mode='lines',
+                        line=dict(
+                            color=self.colors['tunnel'],
+                            width=2,
+                            dash='dash'
+                        ),
+                        name='Tunnel Jump',
+                        hoverinfo='text',
+                        hovertext=f"Tunnel: ({current['x']},{current['y']}) → ({next_pos['x']},{next_pos['y']})",
+                        showlegend=True if i == 0 else False  # Show legend only once
+                    ))
         
         return fig
-    
+        
     def plot_search_progress(self, visited: List[Dict], frontier: List[Dict]):
         """Visualize search progress with visited and frontier nodes"""
         fig = self.create_interactive_plot()
