@@ -98,6 +98,8 @@ if 'search_results' not in st.session_state:
     st.session_state.search_results = []
 if 'performance_data' not in st.session_state:
     st.session_state.performance_data = []
+if 'show_costs' not in st.session_state:
+    st.session_state.show_costs = False
 
 # Title
 st.markdown('<h1 class="main-header">🚚 AI Delivery Route Planner</h1>', unsafe_allow_html=True)
@@ -127,6 +129,18 @@ with st.sidebar:
             if st.session_state.current_grid:
                 st.session_state.page = "compare"
                 st.rerun()
+        # ADD THIS TOGGLE IN SIDEBAR:
+    st.markdown("---")
+    st.markdown("### Display Options")
+    
+    if st.button("💰 Toggle Edge Costs", use_container_width=True):
+        st.session_state.show_costs = not st.session_state.show_costs
+        #st.rerun()
+    
+    if st.session_state.show_costs:
+        st.success("Edge costs: ON")
+    else:
+        st.info("Edge costs: OFF")
     
     st.markdown("---")
     st.markdown("### Current Grid")
@@ -256,7 +270,7 @@ def show_dashboard():
                                 st.success(f"✅ Path found! Cost: {result['total_cost']}")
                                 
                                 # Show path visualization
-                                visualizer = GridVisualizer(grid['grid'])
+                                visualizer = GridVisualizer(grid['grid'],show_costs=st.session_state.show_costs)
                                 fig = visualizer.plot_path(result['positions'])
                                 st.plotly_chart(fig, use_container_width=True)
                             else:
@@ -310,7 +324,7 @@ def show_search_visualization():
     
     with col1:
         # Grid visualization
-        visualizer = GridVisualizer(grid['grid'])
+        visualizer = GridVisualizer(grid['grid'],show_costs=st.session_state.show_costs)
         fig = visualizer.create_interactive_plot()
         st.plotly_chart(fig, use_container_width=True)
     
@@ -745,7 +759,7 @@ def show_performance_analysis():
                                             grid_data = st.session_state.current_grid['grid']
                                             
                                             # Create a simplified grid visualization
-                                            visualizer = GridVisualizer(grid_data)
+                                            visualizer = GridVisualizer(grid_data,show_costs=st.session_state.show_costs)
                                             
                                             # Get store position
                                             store_pos = store_info['store_position']

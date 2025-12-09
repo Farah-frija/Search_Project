@@ -6,11 +6,11 @@ from typing import List, Dict, Any
 class GridVisualizer:
     """Interactive grid visualization using Plotly"""
     
-    def __init__(self, grid_data: Dict[str, Any]):
+    def __init__(self, grid_data: Dict[str, Any],show_costs=False):
         self.grid_data = grid_data
         self.width = grid_data['width']
         self.height = grid_data['height']
-        
+        self.show_cost=show_costs
         # Color scheme
         self.colors = {
             'empty': 'white',
@@ -32,8 +32,10 @@ class GridVisualizer:
         self._add_grid_background(fig)
         
         # Add obstacles
-        self._add_obstacles(fig)
-        
+        self._add_obstacles2(fig)
+        #Add costs
+        if(self.show_cost):
+            self._add_edge_costs(fig)
         # Add tunnels
         self._add_tunnels(fig)
         
@@ -76,6 +78,88 @@ class GridVisualizer:
         )
         
         return fig
+    def _add_edge_costs(self, fig):
+        """Add edge costs to the plot"""
+        if 'traffic_edges' in self.grid_data:
+            for edge in self.grid_data['traffic_edges']:
+                x1, y1 = edge['from']['x'], edge['from']['y']
+                x2, y2 = edge['to']['x'], edge['to']['y']
+                cost = edge.get('cost', 1)
+                 # GRADIENT COLOR BASED ON COST
+                if cost == 1:
+                    text_color = '#2E7D32'  # Green for normal cost
+                    bg_color = 'rgba(46, 125, 50, 0.1)'  # Light green background
+                elif cost <= 3:
+                    text_color = '#F57C00'  # Orange for medium cost
+                    bg_color = 'rgba(245, 124, 0, 0.1)'  # Light orange background
+                else:
+                    text_color = '#D32F2F'  # Red for high cost
+                    bg_color = 'rgba(211, 47, 47, 0.1)'  # Light red background
+                # Skip obstacles (cost == 0) as they're already shown
+                if cost > 0:
+                    # Calculate midpoint for text
+                    mid_x = (x1 + x2) / 2
+                    mid_y = (y1 + y2) / 2
+
+                    # Add cost text
+                    fig.add_trace(go.Scatter(
+                        x=[mid_x],
+                        y=[mid_y],
+                        mode='text',
+                        text=[str(cost)],
+                        textfont=dict(
+                            size=12,
+                    
+                        color=text_color,
+                        weight='bold',
+                        family='Arial'
+                        ),
+                        name='Edge Cost',
+                        hoverinfo='text',
+                        hovertext=f"Cost: {cost} from ({x1},{y1}) to ({x2},{y2})",
+                        showlegend=False
+                    ))
+                
+                # Optionally add a thin line to show the edge
+                fig.add_trace(go.Scatter(
+                    x=[x1, x2],
+                    y=[y1, y2],
+                    mode='lines',
+                    line=dict(
+                        color='lightgray' if cost == 1 else 'orange',
+                        width=1,
+                        dash='dot' if cost > 1 else None
+                    ),
+                    opacity=0.5,
+                    showlegend=False,
+                    hoverinfo='skip'
+                ))
+    
+    def _add_obstacles2(self, fig):
+        """Add obstacles to the plot"""
+        obstacles = []
+        if 'traffic_edges' in self.grid_data:
+            for edge in self.grid_data['traffic_edges']:
+                x1, y1 = edge['from']['x'], edge['from']['y']
+                x2, y2 = edge['to']['x'], edge['to']['y']
+                cost = edge.get('cost', 1)
+
+                # Only show obstacles (cost == 0) in this method
+                if cost == 0:
+                    # Add line for obstacle
+                    fig.add_trace(go.Scatter(
+                        x=[x1, x2],
+                        y=[y1, y2],
+                        mode='lines',
+                        line=dict(color=self.colors['obstacle'], width=3),
+                        name='Obstacle',
+                        hoverinfo='skip'
+                    ))
+
+                    # Add thick point at center
+                    center_x = (x1 + x2) / 2
+                    center_y = (y1 + y2) / 2
+                    obstacles.append((center_x, center_y))
     
     def _add_grid_background(self, fig):
         """Add grid lines"""
