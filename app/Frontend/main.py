@@ -111,7 +111,7 @@ with st.sidebar:
     
     page = st.radio(
         "Go to",
-        ["🏠 Dashboard", "🔍 Search Visualization", "📊 Performance Analysis", "⚙️ Configuration"],
+        ["🏠 Dashboard", "🔍 Search Visualization", "📊 Performance Analysis"],
         index=0
     )
     
@@ -443,46 +443,7 @@ def show_search_visualization():
                 except Exception as e:
                     st.error(f"Error: {str(e)}")
         
-        # Compare algorithms button
-        if st.button("📊 Compare All Algorithms", use_container_width=True):
-            with st.spinner("Comparing algorithms..."):
-                try:
-                    response = requests.post(
-                        f"{API_BASE_URL}/search/compare",
-                        params={
-                            "grid_id": grid['grid_id'],
-                            "store_position": stores[store_idx],
-                            "customer_position": customers[customer_idx]
-                        }
-                    )
-                    
-                    if response.status_code == 200:
-                        comparison = response.json()
-                        st.session_state.performance_data = comparison["comparison"]
-                        
-                        # Show comparison chart
-                        st.markdown("### Algorithm Comparison")
-                        
-                        df = pd.DataFrame(comparison["comparison"])
-                        fig = px.bar(
-                            df[df["success"]],
-                            x="algorithm",
-                            y="total_cost",
-                            color="execution_time_ms",
-                            title="Algorithm Performance Comparison",
-                            labels={
-                                "algorithm": "Algorithm",
-                                "total_cost": "Path Cost",
-                                "execution_time_ms": "Execution Time (ms)"
-                            }
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                        
-                    else:
-                        st.error(f"Comparison failed: {response.text}")
-                        
-                except Exception as e:
-                    st.error(f"Error: {str(e)}")
+
 
 def show_performance_analysis():
     """Performance analysis page"""
@@ -1186,8 +1147,7 @@ elif page == "🔍 Search Visualization":
     show_search_visualization()
 elif page == "📊 Performance Analysis":
     show_performance_analysis()
-elif page == "⚙️ Configuration":
-    show_configuration()
+
 
 
 if __name__ == "__main__":
